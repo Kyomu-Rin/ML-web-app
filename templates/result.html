@@ -3,11 +3,38 @@
 <div class="container">
   <div class="col content">
     <h1>判定結果</h1>
-    {{result}}
-    <p><img src="{{filepath}}"></p>
+    <br>
+    <p>正解：{{ans}}</p>
+
+    <br>
+    <table class="table">
+      <thead class="table-primary">
+        <tr>
+          <th>ID</th>
+          <th>画像</th>
+          <th>①</th>
+          <th>②</th>
+          <th>結果</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {{result}}
+      </tbody>
+
+    </table>
+
+    <br>
+    <br>
+
     <form method="get" action="/">
-      <button class="submit">戻る</button>
+      <div class="d-grid gap-2 col-6 mx-auto">
+        <button class="btn btn-primary submit">戻る</button>
+      </div>
     </form>
+    
+    <br>
+    <br>
   </div>
 </div>
 {% endblock %}

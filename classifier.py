@@ -23,15 +23,18 @@ def index():
 def result():
     if request.method == "POST":
         files = request.files.getlist('file')
+        ans = request.form.get('sel')
 
         # ファイルの保存
         if os.path.isdir(UPLOAD_FOLDER):
             shutil.rmtree(UPLOAD_FOLDER) 
         os.mkdir(UPLOAD_FOLDER)
 
-        result = ""
+        table_result = ""
+        count = 0
         for file in files:
-            
+            count += 1
+
             filename = secure_filename(file.filename)  # ファイル名を安全なものに
             filepath = os.path.join(UPLOAD_FOLDER, filename)
             file.save(filepath)
@@ -48,14 +51,27 @@ def result():
             y = model.predict(x)[0]
             sorted_idx = np.argsort(y)[::-1]  # 降順でソート
             
+            id = "<td>" + str(count) + "</td>"
+            img = "<td><img src=" + filepath + "></td>"
             
+            first_index = sorted_idx[0]
+            first_ratio = y[first_index]
+            first_label = labels[first_index]
+            first_result = "<td><p>" + first_label + "</p><small>(" + str(round(first_ratio*100, 1)) + "%)</small></td>"
 
-            for i in range(n_result):
-                idx = sorted_idx[i]
-                ratio = y[idx]
-                label = labels[idx]
-                result += "<p>" + str(round(ratio*100, 1)) + "%の確率で" + label + "です。</p>"
-        return render_template("result.html", result=Markup(result), filepath=filepath)
+            second_index = sorted_idx[1]
+            second_ratio = y[second_index]
+            second_label = labels[second_index]
+            second_result = "<td><p>" + second_label + "</p><small>(" + str(round(second_ratio*100, 1)) + "%)</small></td>"
+
+            if first_label == ans:
+                result = "<td>〇</td>"
+            else:
+                result = "<td>X</td>"
+
+            table_result += ("<tr>" + id + img + first_result + second_result + result + "</tr>")
+
+        return render_template("result.html", result=Markup(table_result), ans=Markup(ans))
     else:
         return redirect(url_for("index"))
 
