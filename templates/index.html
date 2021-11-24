@@ -3,13 +3,30 @@
 <div class="container">
   <div class="col content">
     <h1>画像分類</h1>
-    <p>ア～ウの判定</p>
     <br>
-    <form method="post", enctype="multipart/form-data", action="/result">
-      <input name="file" type="file">
+    <p>ア～ウの判定</p>
+
+    <form method="post" , enctype="multipart/form-data" , action="/result">
+
+      <div class="cp_ipselect cp_sl01">
+        <select name="sel" required>
+          <option value="" hidden>正解を選択してください</option>
+          <option value="ア">ア</option>
+          <option value="イ">イ</option>
+          <option value="ウ">ウ</option>
+        </select>
+      </div>
+
+      <input name="file" type="file" accept=".png, .jpg, .jpeg, .gif" required multiple>
       <br>
       <br>
-      <input type="submit", value="判定">
+      <br>
+      <br>
+      <br>
+      <div class="d-grid gap-2 col-6 mx-auto">
+        <button class="btn btn-primary submit">採点</button>
+      </div>
+
     </form>
   </div>
 </div>

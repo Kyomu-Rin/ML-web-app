@@ -6,7 +6,6 @@ from PIL import Image
 import numpy as np
 
 UPLOAD_FOLDER = "./static/images/"
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
 labels = ["ア","イ", "空欄", "ウ"]
 n_class = len(labels)
@@ -16,9 +15,6 @@ n_result = 2  # 上位2つの結果を表示
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
@@ -26,41 +22,57 @@ def index():
 @app.route("/result", methods=["GET","POST"])
 def result():
     if request.method == "POST":
-        # ファイルの存在と形式を確認
-        if "file" not in request.files:
-            print("File doesn't exist!")
-            return redirect(url_for("index"))
-        file = request.files["file"]
-        if not allowed_file(file.filename):
-            print(file.filename + ": File not allowed!")
-            return redirect(url_for("index"))
+        files = request.files.getlist('file')
+        ans = request.form.get('sel')
 
         # ファイルの保存
         if os.path.isdir(UPLOAD_FOLDER):
             shutil.rmtree(UPLOAD_FOLDER) 
         os.mkdir(UPLOAD_FOLDER)
-        filename = secure_filename(file.filename)  # ファイル名を安全なものに
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(filepath)
 
-        # 画像の読み込み
-        image = Image.open(filepath)
-        image = image.convert("RGB")
-        image = image.resize((img_size, img_size))
-        x = np.array(image, dtype=float)
-        x = x.reshape(1, img_size, img_size, 3) / 255        
+        table_result = ""
+        count = 0
+        for file in files:
+            count += 1
 
-        # 予測
-        model = load_model("./image_classifier.h5")
-        y = model.predict(x)[0]
-        sorted_idx = np.argsort(y)[::-1]  # 降順でソート
-        result = ""
-        for i in range(n_result):
-            idx = sorted_idx[i]
-            ratio = y[idx]
-            label = labels[idx]
-            result += "<p>" + str(round(ratio*100, 1)) + "%の確率で" + label + "です。</p>"
-        return render_template("result.html", result=Markup(result), filepath=filepath)
+            filename = secure_filename(file.filename)  # ファイル名を安全なものに
+            filepath = os.path.join(UPLOAD_FOLDER, filename)
+            file.save(filepath)
+
+            # 画像の読み込み
+            image = Image.open(filepath)
+            image = image.convert("RGB")
+            image = image.resize((img_size, img_size))
+            x = np.array(image, dtype=float)
+            x = x.reshape(1, img_size, img_size, 3) / 255        
+
+            # 予測
+            model = load_model("./image_classifier.h5")
+            y = model.predict(x)[0]
+            sorted_idx = np.argsort(y)[::-1]  # 降順でソート
+            
+            id = "<td>" + str(count) + "</td>"
+            img = "<td><img src=" + filepath + "></td>"
+            
+            first_index = sorted_idx[0]
+            first_ratio = y[first_index]
+            first_label = labels[first_index]
+            first_result = '<td><p style="font-size: 30px; font-weight: bold;">' + first_label + "</p><small>(" + str(round(first_ratio*100, 1)) + "%)</small></td>"
+
+            second_index = sorted_idx[1]
+            second_ratio = y[second_index]
+            second_label = labels[second_index]
+            second_result = "<td><p>" + second_label + "</p><small>(" + str(round(second_ratio*100, 1)) + "%)</small></td>"
+
+            if first_label == ans:
+                result = '<td style="font-size: 30px; font-weight: bold;">〇</td>'
+                table_result += ("<tr>" + id + img + first_result + second_result + result + "</tr>")
+            else:
+                result = '<td style="font-size: 30px;">X</td>'
+                table_result += ('<tr style="background-color: #EEEEEE;">' + id + img + first_result + second_result + result + "</tr>")
+
+
+        return render_template("result.html", result=Markup(table_result), ans=Markup(ans))
     else:
         return redirect(url_for("index"))
 
