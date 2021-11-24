@@ -57,7 +57,7 @@ def result():
             first_index = sorted_idx[0]
             first_ratio = y[first_index]
             first_label = labels[first_index]
-            first_result = "<td><p>" + first_label + "</p><small>(" + str(round(first_ratio*100, 1)) + "%)</small></td>"
+            first_result = '<td><p style="font-size: 30px; font-weight: bold;">' + first_label + "</p><small>(" + str(round(first_ratio*100, 1)) + "%)</small></td>"
 
             second_index = sorted_idx[1]
             second_ratio = y[second_index]
@@ -65,11 +65,12 @@ def result():
             second_result = "<td><p>" + second_label + "</p><small>(" + str(round(second_ratio*100, 1)) + "%)</small></td>"
 
             if first_label == ans:
-                result = "<td>〇</td>"
+                result = '<td style="font-size: 30px; font-weight: bold;">〇</td>'
+                table_result += ("<tr>" + id + img + first_result + second_result + result + "</tr>")
             else:
-                result = "<td>X</td>"
+                result = '<td style="font-size: 30px;">X</td>'
+                table_result += ('<tr style="background-color: #EEEEEE;">' + id + img + first_result + second_result + result + "</tr>")
 
-            table_result += ("<tr>" + id + img + first_result + second_result + result + "</tr>")
 
         return render_template("result.html", result=Markup(table_result), ans=Markup(ans))
     else:
