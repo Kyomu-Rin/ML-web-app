@@ -10,7 +10,6 @@ UPLOAD_FOLDER = "./static/images/"
 labels = ["ア","イ", "空欄", "ウ"]
 n_class = len(labels)
 img_size = 64
-n_result = 2  # 上位2つの結果を表示
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -46,8 +45,8 @@ def result():
             x = np.array(image, dtype=float)
             x = x.reshape(1, img_size, img_size, 3) / 255        
 
-            # 予測
-            model = load_model("./image_classifier.h5")
+            # 予測：小さい文字にも対応
+            model = load_model("./image_classifier2.h5")
             y = model.predict(x)[0]
             sorted_idx = np.argsort(y)[::-1]  # 降順でソート
             
