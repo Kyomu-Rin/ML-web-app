@@ -12,7 +12,7 @@
 - テスト採点の在宅ワークを見ていて、簡単な選択問題を人間が採点する必要があるのか疑問だったから
 
 ちなみにテックベースのインターンシップの課題でした
-  - [発表資料](https://docs.google.com/presentation/d/1Ww62IRpu7KijlmwIg43VxCmVBYzAxXPoaiAxmsLnxrM/edit?usp=sharing)
+  - [発表資料](https://docs.google.com/presentation/d/1vr25FiOq6S4k0Sb4qihmBqJhJ5XUTMNSJGJf43uYWkE/edit?usp=sharing)
   - 期間：2021年10月29日(金)～2021年11月26日(金)
 
 
